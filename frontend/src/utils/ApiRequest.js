@@ -1,4 +1,5 @@
-export const host = "http://localhost:5000";
+
+export const host = "https://finora-q47s.onrender.com";
 export const registerAPI = `${host}/api/auth/register`;
 export const loginAPI = `${host}/api/auth/login`;
 export const forgotPasswordAPI = `${host}/api/auth/forgot-password`;

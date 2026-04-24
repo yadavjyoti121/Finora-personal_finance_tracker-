@@ -27,6 +27,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://main.d1sj7cd70hlter.amplifyapp.com",
   "https://expense-tracker-app-three-beryl.vercel.app",
+  "https://finora-q47s.onrender.com",  
+  "https://finora-frontend.onrender.com", 
 ].filter(Boolean);
 
 app.use(express.json({ limit: "8mb" }));
