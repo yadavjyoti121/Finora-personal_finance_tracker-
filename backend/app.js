@@ -55,7 +55,7 @@ app.use("/api/v1", transactionRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Finora backend is running",
@@ -82,9 +82,30 @@ app.head("/", (req, res) => {
 if (fs.existsSync(frontendIndexPath)) {
   app.use(express.static(frontendBuildPath));
 
-  // app.get("*", (req, res) => {
-  //   res.sendFile(frontendIndexPath);
-  // });
+  app.get("/", (req, res) => {
+    res.sendFile(frontendIndexPath);
+  });
+
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      next();
+      return;
+    }
+
+    res.sendFile(frontendIndexPath);
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      success: true,
+      message: "Finora backend is running",
+      note: "Frontend build not found on this deployment.",
+      docs: {
+        api: "/api",
+        health: "/health",
+      },
+    });
+  });
 }
 
 app.listen(port, () => {
