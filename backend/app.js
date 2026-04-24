@@ -55,12 +55,25 @@ app.use("/api/v1", transactionRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 
-// app.get("/", (req, res) => {
-//   res.status(200).json({
-//     success: true,
-//     message: "Finora backend is running",
-//   });
-// });
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Finora backend is running",
+    docs: {
+      auth: "/api/auth",
+      transactions: "/api/v1",
+      chatbot: "/api/chatbot",
+      health: "/health",
+    },
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "ok",
+  });
+});
 
 app.head("/", (req, res) => {
   res.status(200).end();
