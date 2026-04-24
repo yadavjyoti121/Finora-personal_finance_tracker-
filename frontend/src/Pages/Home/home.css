@@ -1,13 +1,44 @@
+.dashboardShell {
+    padding-bottom: 120px;
+}
+
+.dashboardHero {
+    background: linear-gradient(135deg, rgba(255, 183, 3, 0.16), rgba(31, 64, 104, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 24px;
+    color: white;
+}
+
+.heroEyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.heroSubtext {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
 .filterRow{
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
 
 }
 
 .data-table {
     border-collapse: collapse;
+    background: rgba(10, 22, 35, 0.78);
+    border-radius: 16px;
+    overflow: hidden;
   }
   
 .data-table thead th {
@@ -67,22 +98,21 @@
 .iconActive{
     background-color: white;
     color: black;
+    border-radius: 6px;
 }
 .iconDeactive{
     background-color: rgb(78, 74, 78);
     color: black;
+    border-radius: 6px;
 }
 
 @media only screen and (max-width: 600px) {
     .filterRow {
         padding: 0px !important;
         margin-top: 0px !important;
-        display: flex;
-        gap: "5px";
-        
+        gap: 8px;
     }
     .addNew{
-        /* padding-top: 20px; */
         display: none !important;
     }
     .mobileBtn{
@@ -97,16 +127,15 @@
     }
     
     .date{
-        /* padding: 10px; */
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: "10px";
+        gap: 10px;
         flex-direction: column;
         margin-bottom: 10px;
     }
     .date .form-group{
-        width: 45%;
+        width: 100%;
     }
 
     .containerBtn{

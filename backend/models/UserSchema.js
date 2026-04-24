@@ -1,24 +1,32 @@
 import mongoose from "mongoose";
 import validator from "validator";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 
-// User Schema Model - (Name, email, password, creation Date) with validation rules
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "Name is required"],
+        trim: true,
     },
     email: {
         type: String,
         required: [true, "Email is required"],
         unique : true,
+        lowercase: true,
+        trim: true,
         validate : validator.isEmail,
     },
     password: {
         type: String,
         required: [true, "Password is required"],
-        minlength : [6, "Password Must Be Atleast 6 characters"],
+        minlength : [8, "Password must be at least 8 characters"],
+        validate: {
+            validator: (value) => passwordRegex.test(value),
+            message:
+              "Password must include uppercase, lowercase, number, and special character",
+        },
     },
     isAvatarImageSet: {
         type: Boolean,
@@ -29,17 +37,19 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    passwordResetToken: {
+        type: String,
+        default: null,
+    },
+    passwordResetExpires: {
+        type: Date,
+        default: null,
+    },
     transactions: {
         type: [],
     },
-
-    createdAt: {
-        type:Date,
-        default: Date.now,
-    },
-
-    
-
+}, {
+    timestamps: true,
 });
 
 const User = mongoose.model("User", userSchema);

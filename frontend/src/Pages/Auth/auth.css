@@ -2,9 +2,121 @@
     text-decoration: none;
 }
 .btnStyle{
-    background-color: red;
-    border: 2px solid red;
+    background-color: #fb8500 !important;
+    border: 2px solid #fb8500 !important;
 }
 .btnStyle:hover{
-    background-color: rgb(75, 11, 11);
+    background-color: #c95f00 !important;
+    border-color: #c95f00 !important;
+}
+
+.authContainer {
+    position: relative;
+    z-index: 2;
+}
+
+.authCard {
+    background: rgba(8, 18, 31, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.authSubtext {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 0;
+}
+
+.authActions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.authMutedText {
+    color: #b9b6b6;
+}
+
+.authHint {
+    display: block;
+    margin-top: 6px;
+}
+
+.authPlainPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.authFeatureCard {
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.authFeatureCard::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 133, 0, 0.22), transparent 70%);
+    top: -60px;
+    right: -40px;
+    pointer-events: none;
+}
+
+.authBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 6px 12px;
+    margin: 0 auto 14px;
+    background: rgba(255, 183, 3, 0.16);
+    color: #ffd166;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.authPrimaryButton {
+    width: 100%;
+    max-width: 280px;
+    min-height: 46px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.authAlertLink a {
+    color: #7a4f00;
+    word-break: break-all;
+}
+
+.authLoadingBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.84);
+    padding: 28px 0 8px;
+}
+
+@media only screen and (max-width: 600px) {
+    .authCard {
+        padding: 22px 18px;
+        border-radius: 20px;
+    }
+
+    .authPrimaryButton {
+        max-width: 100%;
+    }
 }

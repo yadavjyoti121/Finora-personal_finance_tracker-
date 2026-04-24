@@ -1,155 +1,64 @@
-// NavbarComponent.js
-import React, { useCallback, useEffect, useState } from 'react';
-import { Navbar, Nav, Button } from 'react-bootstrap';
+import React from "react";
+import { Container, Dropdown, Navbar } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import "./style.css";
-import { useNavigate } from 'react-router-dom';
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
-const Header = () => {
-  
-const navigate = useNavigate();
+import { resolveAssetUrl } from "../utils/files";
 
-  const handleShowLogin = () =>{
-    navigate("/login");
-  }
+const getInitials = (name = "") =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 
-  const [user, setUser] = useState();
+const Header = ({ user, onLogout }) => {
+  const navigate = useNavigate();
+  const avatarUrl = resolveAssetUrl(user?.avatarImage);
 
-  useEffect(() => {
-    
-      if (localStorage.getItem("user")) {
-        const user = JSON.parse(localStorage.getItem("user"));
-        
-        setUser(user);
-        
-      }
+  const avatarContent = avatarUrl ? (
+    <img src={avatarUrl} alt={user?.name || "Profile"} className="profileAvatarImage" />
+  ) : (
+    <div className="profileAvatarFallback">{getInitials(user?.name || "F")}</div>
+  );
 
-
-    
-  }, []);
-
-  const handleShowLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/login");
-  }
-
-  const particlesInit = useCallback(async (engine) => {
-    // console.log(engine);
-    await loadFull(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container) => {
-    // await console.log(container);
-  }, []);
-  
   return (
-    <>
-    <div style={{ position: 'relative', overflow: 'hidden' }}>
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
-        loaded={particlesLoaded}
-        options={{
-          background: {
-            color: {
-              value: '#000',
-            },
-          },
-          fpsLimit: 60,
-          particles: {
-            number: {
-              value: 200,
-              density: {
-                enable: true,
-                value_area: 800,
-              },
-            },
-            color: {
-              value: '#ffcc00',
-            },
-            shape: {
-              type: 'circle',
-            },
-            opacity: {
-              value: 0.5,
-              random: true,
-            },
-            size: {
-              value: 3,
-              random: { enable: true, minimumValue: 1 },
-            },
-            links: {
-              enable: false,
-            },
-            move: {
-              enable: true,
-              speed: 2,
-            },
-            life: {
-              duration: {
-                sync: false,
-                value: 3,
-              },
-              count: 0,
-              delay: {
-                random: {
-                  enable: true,
-                  minimumValue: 0.5,
-                },
-                value: 1,
-              },
-            },
-          },
-          detectRetina: true,
-        }}
-        style={{
-          position: 'absolute',
-          zIndex: -1,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
-      />
-    <Navbar className="navbarCSS" collapseOnSelect expand="lg" style={{position: 'relative', zIndex: "2 !important"}}>
-      {/* <Navbar className="navbarCSS" collapseOnSelect expand="lg" bg="dark" variant="dark"> */}
-        <Navbar.Brand href="/" className="text-white navTitle">Expense Management System</Navbar.Brand>
-        <Navbar.Toggle
-            aria-controls="basic-navbar-nav"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-            }}
-          >
-            <span
-              className="navbar-toggler-icon"
-              style={{
-                background: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e")`,
-              }}
-            ></span>
-          </Navbar.Toggle>
-        <div>
-        <Navbar.Collapse id="responsive-navbar-nav" style={{color: "white"}}>
-          {user ? (
-            <>
-            <Nav>
-                <Button variant="primary" onClick={handleShowLogout} className="ml-2">Logout</Button>
-              </Nav>
-            </>
-          ) : (
+    <div className="headerShell">
+      <Navbar expand="lg" className="navbarCSS">
+        <Container fluid className="headerInner">
+          <Navbar.Brand onClick={() => navigate("/")} className="text-white navTitle" role="button">
+            Finora
+          </Navbar.Brand>
 
-            <>
-              <Nav>
-                <Button variant="primary" onClick={handleShowLogin} className="ml-2">Login</Button>
-              </Nav>
-            </>
-          )}
-          
-        </Navbar.Collapse>
-      </div>
+          <div className="profileArea">
+            <Dropdown align="end">
+              <Dropdown.Toggle
+                variant="link"
+                className="profileToggle text-decoration-none"
+                id="profile-dropdown"
+              >
+                {avatarContent}
+                <div className="profileText">
+                  <span className="profileName">{user?.name || "User"}</span>
+                  <span className="profileEmail">{user?.email || ""}</span>
+                </div>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="profileMenu">
+                <div className="profileMenuHeader">
+                  <div className="profileMenuName">{user?.name || "User"}</div>
+                  <div className="profileMenuEmail">{user?.email || ""}</div>
+                </div>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={() => navigate("/profile")}>View Profile</Dropdown.Item>
+                <Dropdown.Item onClick={() => navigate("/setAvatar")}>Choose Avatar</Dropdown.Item>
+                <Dropdown.Item onClick={onLogout}>Logout</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </Container>
       </Navbar>
-      </div>
-    </>
+    </div>
   );
 };
 

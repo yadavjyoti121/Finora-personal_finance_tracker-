@@ -1,35 +1,119 @@
-.navbarCSS{
-    padding: 15px 20px;
-    display: flex !important;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between !important;
-    width: 100vw;
-    
+.headerShell {
+  background: linear-gradient(135deg, #06121f 0%, #0f2740 55%, #143a57 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
-
-
-.navItemCSS{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+.navbarCSS {
+  padding: 14px 10px;
 }
 
-/* .custom-toggler.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  } */
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
 
-/* 
-  @media only screen and (max-width: 600px) {
-    .navbarCSS {
-        padding: 0px 0px !important;
-    }
-    .navTitle{
-        font-size: 16px !important;
-    }
+.navTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
 
-  } */
+.profileArea {
+  margin-left: auto;
+}
 
+.profileToggle {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 999px !important;
+  padding: 8px 14px !important;
+}
+
+.profileToggle::after {
+  margin-left: 6px;
+  color: #fff;
+}
+
+.profileText {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.profileName {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.profileEmail {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.profileAvatarImage,
+.profileAvatarFallback {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileAvatarFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  color: #10243a;
+  font-weight: 700;
+}
+
+.profileMenu {
+  min-width: 250px;
+  border-radius: 16px !important;
+  padding: 8px 0 !important;
+}
+
+.profileMenuHeader {
+  padding: 10px 16px 4px;
+}
+
+.profileMenuName {
+  font-weight: 700;
+}
+
+.profileMenuEmail {
+  color: #5f6c7b;
+  font-size: 0.85rem;
+  word-break: break-word;
+}
+
+@media only screen and (max-width: 600px) {
+  .navTitle {
+    font-size: 1.15rem;
+  }
+
+  .profileToggle {
+    padding: 8px 10px !important;
+    gap: 8px;
+  }
+
+  .profileText {
+    max-width: 120px;
+  }
+
+  .profileEmail {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

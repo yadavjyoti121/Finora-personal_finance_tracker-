@@ -10,6 +10,7 @@ import { Button } from "react-bootstrap";
 import { setAvatarAPI } from "../../utils/ApiRequest.js";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
+import { getAuthHeaders, getStoredAuth, setStoredAuth } from "../../utils/auth.js";
 
 // import Buffer from "buffer";
 const {
@@ -57,21 +58,17 @@ const SetAvatar = () => {
 
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
   const [loading, setLoading] = useState(false);
-  const [selectedSprite, setSelectedSprite] = React.useState(sprites[0]);
-
   useEffect(() => {
-    if (!localStorage.getItem("user")) {
+    if (!getStoredAuth()?.token) {
       navigate("/login");
     }
   }, [navigate]);
 
   const randomName = () => {
     let shortName = uniqueNamesGenerator({
-      dictionaries: [animals, colors, countries, names, languages], // colors can be omitted here as not used
+      dictionaries: [animals, colors, countries, names, languages],
       length: 2,
     });
-    // console.log(shortName);
-
     return shortName;
   };
 
@@ -83,42 +80,44 @@ const SetAvatar = () => {
   ]);
 
   const handleSpriteChange = (e) => {
-    setSelectedSprite(() => {
-      if (e.target.value.length > 0) {
-        setLoading(true);
-        const imgData = [];
-        for (let i = 0; i < 4; i++) {
-          imgData.push(
-            `https://api.dicebear.com/7.x/${
-              e.target.value
-            }/svg?seed=${randomName()}`
-          );
-        }
-
-        setImgURL(imgData);
-        // console.log(imgData);
-        setLoading(false);
+    if (e.target.value.length > 0) {
+      setLoading(true);
+      const imgData = [];
+      for (let i = 0; i < 4; i++) {
+        imgData.push(`https://api.dicebear.com/7.x/${e.target.value}/svg?seed=${randomName()}`);
       }
 
-      return e.target.value;
-    });
+      setImgURL(imgData);
+      setLoading(false);
+    }
   };
 
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
       toast.error("Please select an avatar", toastOptions);
     } else {
-      const user = JSON.parse(localStorage.getItem("user"));
-      // console.log(user);
+      const auth = getStoredAuth();
+      const user = auth?.user;
 
-      const { data } = await axios.post(`${setAvatarAPI}/${user._id}`, {
-        image: imgURL[selectedAvatar],
-      });
+      const { data } = await axios.post(
+        setAvatarAPI,
+        {
+          image: imgURL[selectedAvatar],
+        },
+        {
+          headers: getAuthHeaders(),
+        }
+      );
 
       if (data.isSet) {
-        user.isAvatarImageSet = true;
-        user.avatarImage = data.image;
-        localStorage.setItem("user", JSON.stringify(user));
+        setStoredAuth({
+          ...auth,
+          user: {
+            ...user,
+            isAvatarImageSet: true,
+            avatarImage: data.image,
+          },
+        });
         toast.success("Avatar selected successfully", toastOptions);
         navigate("/");
       } else {
@@ -208,14 +207,13 @@ const SetAvatar = () => {
 
         {loading === true ? (
           <>
-            {/* <Container></Container> */}
             <div
               className="container containerBox"
               h={"100vh"}
               style={{ position: "relative", zIndex: "2 !important" }}
             >
               <div className="avatarBox">
-                <image src={spinner} alt="Loading"></image>
+                <img src={spinner} alt="Loading" />
               </div>
             </div>
           </>
@@ -229,23 +227,9 @@ const SetAvatar = () => {
                 <h1 className="text-center text-white mt-5">
                   Choose Your Avatar
                 </h1>
-                {/* <div className="imgBox">
-                        
-                        {imgURL.map((image, index)=> {
-
-                            console.log(image);
-                            return(
-                                <img key={index} src={image} alt="" className={`avatar ${selectedAvatar === index ? "selected" : ""} img-circle imgAvatar`} onClick={() => setSelectedAvatar(index)} width="250px" height="250px"/>
-                            )
-                        })}
-                            
-                        
-
-                    </div> */}
                 <div className="container">
                   <div className="row">
                     {imgURL.map((image, index) => {
-                      console.log(image);
                       return (
                         <div key={index} className="col-lg-3 col-md-6 col-6">
                           <img

@@ -1,6 +1,5 @@
-// LoginPage.js
 import { useCallback, useEffect, useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -9,68 +8,74 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { loginAPI } from "../../utils/ApiRequest";
+import { getStoredAuth, setStoredAuth } from "../../utils/auth";
+import { validateEmail } from "../../utils/validation";
+import "./auth.css";
+
+const toastOptions = {
+  position: "bottom-right",
+  autoClose: 2500,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: false,
+  draggable: true,
+  theme: "dark",
+};
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      navigate("/");
-    }
-  }, [navigate]);
-
+  const [error, setError] = useState("");
   const [values, setValues] = useState({
     email: "",
     password: "",
   });
 
-  const toastOptions = {
-    position: "bottom-right",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: true,
-    progress: undefined,
-    theme: "dark",
-  };
+  useEffect(() => {
+    if (getStoredAuth()?.token) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const { email, password } = values;
+    if (!validateEmail(values.email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
 
-    setLoading(true);
+    if (!values.password.trim()) {
+      setError("Password is required.");
+      return;
+    }
 
-    const { data } = await axios.post(loginAPI, {
-      email,
-      password,
-    });
+    try {
+      setLoading(true);
+      const { data } = await axios.post(loginAPI, values);
 
-    if (data.success === true) {
-      localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/");
+      setStoredAuth({
+        token: data.token,
+        user: data.user,
+      });
+
       toast.success(data.message, toastOptions);
-      setLoading(false);
-    } else {
-      toast.error(data.message, toastOptions);
+      navigate("/");
+    } catch (error) {
+      setError(error.response?.data?.message || "Unable to sign in right now.");
+    } finally {
       setLoading(false);
     }
   };
 
   const particlesInit = useCallback(async (engine) => {
-    // console.log(engine);
     await loadFull(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container) => {
-    // await console.log(container);
   }, []);
 
   return (
@@ -78,7 +83,6 @@ const Login = () => {
       <Particles
         id="tsparticles"
         init={particlesInit}
-        loaded={particlesLoaded}
         options={{
           background: {
             color: {
@@ -115,98 +119,68 @@ const Login = () => {
               enable: true,
               speed: 2,
             },
-            life: {
-              duration: {
-                sync: false,
-                value: 3,
-              },
-              count: 0,
-              delay: {
-                random: {
-                  enable: true,
-                  minimumValue: 0.5,
-                },
-                value: 1,
-              },
-            },
           },
           detectRetina: true,
         }}
         style={{
           position: "absolute",
           zIndex: -1,
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          inset: 0,
         }}
       />
-      <Container
-        className="mt-5"
-        style={{ position: "relative", zIndex: "2 !important" }}
-      >
+      <Container className="mt-5 authContainer">
         <Row>
           <Col md={{ span: 6, offset: 3 }}>
-            <h1 className="text-center mt-5">
-              <AccountBalanceWalletIcon
-                sx={{ fontSize: 40, color: "white" }}
-                className="text-center"
-              />
-            </h1>
-            <h2 className="text-white text-center ">Login</h2>
-            <Form>
-              <Form.Group controlId="formBasicEmail" className="mt-3">
-                <Form.Label className="text-white">Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter email"
-                  name="email"
-                  onChange={handleChange}
-                  value={values.email}
-                />
-              </Form.Group>
+            <div className="authCard">
+              <h1 className="text-center mt-2">
+                <AccountBalanceWalletIcon sx={{ fontSize: 40, color: "white" }} />
+              </h1>
+              <h2 className="text-white text-center">Login to Finora</h2>
+              <p className="authSubtext">Track spending, review trends, and stay in control.</p>
 
-              <Form.Group controlId="formBasicPassword" className="mt-3">
-                <Form.Label className="text-white">Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  onChange={handleChange}
-                  value={values.password}
-                />
-              </Form.Group>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
-                className="mt-4"
-              >
-                <Link to="/forgotPassword" className="text-white lnk">
-                  Forgot Password?
-                </Link>
+              {error ? <Alert variant="danger">{error}</Alert> : null}
 
-                <Button
-                  type="submit"
-                  className=" text-center mt-3 btnStyle"
-                  onClick={!loading ? handleSubmit : null}
-                  disabled={loading}
-                >
-                  {loading ? "Signin…" : "Login"}
-                </Button>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formBasicEmail" className="mt-3">
+                  <Form.Label className="text-white">Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    name="email"
+                    onChange={handleChange}
+                    value={values.email}
+                  />
+                </Form.Group>
 
-                <p className="mt-3" style={{ color: "#9d9494" }}>
-                  Don't Have an Account?{" "}
-                  <Link to="/register" className="text-white lnk">
-                    Register
+                <Form.Group controlId="formBasicPassword" className="mt-3">
+                  <Form.Label className="text-white">Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    onChange={handleChange}
+                    value={values.password}
+                  />
+                </Form.Group>
+
+                <div className="authActions mt-4">
+                  <Link to="/forgot-password" className="text-white lnk">
+                    Forgot Password?
                   </Link>
-                </p>
-              </div>
-            </Form>
+
+                  <Button type="submit" className="text-center mt-3 btnStyle" disabled={loading}>
+                    {loading ? "Signing in..." : "Login"}
+                  </Button>
+
+                  <p className="mt-3 authMutedText">
+                    Don't have an account?{" "}
+                    <Link to="/register" className="text-white lnk">
+                      Register
+                    </Link>
+                  </p>
+                </div>
+              </Form>
+            </div>
           </Col>
         </Row>
         <ToastContainer />

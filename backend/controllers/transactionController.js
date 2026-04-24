@@ -10,9 +10,9 @@ export const addTransactionController = async (req, res) => {
       description,
       date,
       category,
-      userId,
       transactionType,
     } = req.body;
+    const userId = req.user.id;
 
     // console.log(title, amount, description, date, category, userId, transactionType);
 
@@ -67,9 +67,8 @@ export const addTransactionController = async (req, res) => {
 
 export const getAllTransactionController = async (req, res) => {
   try {
-    const { userId, type, frequency, startDate, endDate } = req.body;
-
-    console.log(userId, type, frequency, startDate, endDate);
+    const { type, frequency, startDate, endDate } = req.body;
+    const userId = req.user.id;
 
     const user = await User.findById(userId);
 
@@ -103,7 +102,7 @@ export const getAllTransactionController = async (req, res) => {
 
     // console.log(query);
 
-    const transactions = await Transaction.find(query);
+    const transactions = await Transaction.find(query).sort({ date: -1, createdAt: -1 });
 
     // console.log(transactions);
 
@@ -123,7 +122,7 @@ export const getAllTransactionController = async (req, res) => {
 export const deleteTransactionController = async (req, res) => {
   try {
     const transactionId = req.params.id;
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     // console.log(transactionId, userId);
 
@@ -135,9 +134,10 @@ export const deleteTransactionController = async (req, res) => {
         message: "User not found",
       });
     }
-    const transactionElement = await Transaction.findByIdAndDelete(
-      transactionId
-    );
+    const transactionElement = await Transaction.findOneAndDelete({
+      _id: transactionId,
+      user: userId,
+    });
 
     if (!transactionElement) {
       return res.status(400).json({
@@ -147,7 +147,7 @@ export const deleteTransactionController = async (req, res) => {
     }
 
     const transactionArr = user.transactions.filter(
-      (transaction) => transaction._id === transactionId
+      (transaction) => transaction._id.toString() !== transactionId
     );
 
     user.transactions = transactionArr;
@@ -175,9 +175,10 @@ export const updateTransactionController = async (req, res) => {
     const { title, amount, description, date, category, transactionType } =
       req.body;
 
-    console.log(title, amount, description, date, category, transactionType);
-
-    const transactionElement = await Transaction.findById(transactionId);
+    const transactionElement = await Transaction.findOne({
+      _id: transactionId,
+      user: req.user.id,
+    });
 
     if (!transactionElement) {
       return res.status(400).json({

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Expense Management System using MERN Stack
 
@@ -177,3 +178,6 @@ Insert gif or link to demo
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
+=======
+# Finora-personal_finance_tracker-
+>>>>>>> 00db0da0f6e8e89b409ff73e96aa4ba326812151
