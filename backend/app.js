@@ -50,9 +50,13 @@ app.use("/api/v1", transactionRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 
-// app.get("/", (req, res) => {
-//   res.send("Hello World!");
-// });
+app.get("/", (req, res) => {
+  res.send("Finora Backend is Running 🚀");
+});
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+});
+
 
 app.listen(port, () => {
   console.log(`Server is listening on http://localhost:${port}`);
